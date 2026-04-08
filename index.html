@@ -1,0 +1,999 @@
+<!doctype html>
+<html>
+  <head lang="en">
+    <meta charset="UTF-8" />
+    <meta http-equiv="x-ua-compatible" content="ie=edge" />
+
+    <title>Action Images</title>
+
+    <meta
+      name="description"
+      content="Action Images: End-to-End Policy Learning via Multiview Video Generation."
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1216" />
+    <meta property="og:image:height" content="832" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Action Images" />
+    <meta
+      property="og:description"
+      content="Action Images: End-to-End Policy Learning via Multiview Video Generation."
+    />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta
+      name="twitter:description"
+      content="Action Images: End-to-End Policy Learning via Multiview Video Generation."
+    />
+
+    <link rel="icon" href="img/favicon.png" alt="Logo" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.8.0/codemirror.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css"
+    />
+    <link rel="stylesheet" href="css/app.css" />
+    <link rel="stylesheet" href="css/fontawesome.all.min.css" />
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.8.0/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.5.3/clipboard.min.js"></script>
+    <script src="https://unpkg.com/masonry-layout@4/dist/masonry.pkgd.min.js"></script>
+    <script
+      type="module"
+      src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"
+    ></script>
+    <script
+      nomodule
+      src="https://unpkg.com/@google/model-viewer/dist/model-viewer-legacy.js"
+    ></script>
+    <script defer src="js/fontawesome.all.min.js"></script>
+    <script src="js/app.js"></script>
+    <style>
+      .highlight-text {
+        background-color: #e7f0fb;
+        padding: 2px 5px;
+        border-radius: 3px;
+        color: #183a63;
+        transition: all 0.3s ease;
+      }
+      ul,
+      li {
+        text-align: left;
+      }
+      .large-text {
+        font-size: 24px;
+      }
+      .masonry-item {
+        width: 25%;
+        aspect-ratio: 640 / 480;
+        overflow: hidden;
+      }
+
+      .masonry-item,
+      .masonry-sizer {
+        width: 25%;
+      }
+      @media (max-width: 991.98px) {
+        .masonry-item,
+        .masonry-sizer {
+          width: 33.333%;
+        }
+      }
+      @media (max-width: 575.98px) {
+        .masonry-item,
+        .masonry-sizer {
+          width: 50%;
+        }
+      }
+
+      .video-wrapper {
+        position: relative;
+      }
+      .video-wrapper figcaption {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 4px 6px;
+        background: rgba(24, 58, 99, 0.68);
+        color: #fff;
+        font-size: 0.9rem;
+        line-height: 1.2;
+        opacity: 0;
+        transition: opacity 0.2s ease;
+      }
+      .video-wrapper:hover figcaption {
+        opacity: 1;
+      }
+
+      .previous-work-preview {
+        display: block;
+        width: 100%;
+        aspect-ratio: 16 / 9;
+        object-fit: cover;
+        border-radius: 8px;
+        border: 1px solid #c4d3e3;
+        background: #000;
+      }
+      /* 非 16:9 片源：在固定 16:9 画幅内完整显示，黑边由 background 填充 */
+      .previous-work-preview.previous-work-preview--letterbox {
+        object-fit: contain;
+      }
+      .previous-work-card a:hover .previous-work-title {
+        text-decoration: underline;
+      }
+
+      .masonry-item video,
+      .masonry-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      .container-lg {
+        position: relative;
+        background: rgba(248, 251, 255, 0.82);
+        border-radius: 10px;
+        padding: 20px;
+      }
+      .CodeMirror {
+        background: rgba(255, 255, 255, 0);
+      }
+      .media-placeholder {
+        min-height: 240px;
+        background: linear-gradient(135deg, #edf3fb 0%, #f7faff 100%);
+        border: 1px dashed #c4d3e3;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #63778e;
+        font-size: 0.95rem;
+      }
+      .results-grid {
+        display: grid;
+        gap: 4px;
+      }
+      .results-grid-four {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+      .results-grid-three {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+      .results-item {
+        aspect-ratio: 1 / 1;
+        min-height: 120px;
+        text-align: center;
+      }
+      .interactive-3d-card {
+        position: relative;
+        border-radius: 8px;
+        border: 1px solid #c4d3e3;
+        background: linear-gradient(135deg, #edf3fb 0%, #f7faff 100%);
+        overflow: hidden;
+      }
+      .interactive-3d-card model-viewer {
+        display: block;
+        width: 100%;
+        height: 100%;
+        --poster-color: transparent;
+        cursor: grab;
+      }
+      .interactive-3d-card model-viewer:active {
+        cursor: grabbing;
+      }
+      .interactive-3d-status {
+        position: absolute;
+        top: 8px;
+        left: 8px;
+        right: 8px;
+        margin: 0;
+        padding: 6px 8px;
+        border-radius: 6px;
+        font-size: 0.82rem;
+        line-height: 1.25;
+        text-align: left;
+        color: #274869;
+        background: rgba(247, 250, 255, 0.88);
+        border: 1px solid rgba(196, 211, 227, 0.9);
+        z-index: 2;
+      }
+      .interactive-3d-status.hidden {
+        display: none;
+      }
+      .interactive-3d-meta {
+        position: absolute;
+        left: 8px;
+        right: 8px;
+        bottom: 8px;
+        border-radius: 6px;
+        padding: 6px 8px;
+        background: rgba(247, 250, 255, 0.78);
+        border: 1px solid rgba(196, 211, 227, 0.8);
+        backdrop-filter: blur(2px);
+      }
+      .results-label {
+        display: block;
+        font-weight: 600;
+        color: #183a63;
+        margin-bottom: 4px;
+      }
+      .results-size {
+        display: block;
+        font-size: 0.88rem;
+        color: #4f6781;
+      }
+      .results-labeled-row {
+        display: grid;
+        grid-template-columns: 72px minmax(0, 1fr);
+        align-items: stretch;
+        column-gap: 10px;
+        margin-bottom: 12px;
+      }
+      .results-row-label {
+        margin: 0;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 6px 8px;
+        font-weight: 700;
+        color: #183a63;
+        text-align: center;
+        border: 1px solid #c4d3e3;
+        border-radius: 8px;
+        background: linear-gradient(135deg, #edf3fb 0%, #f7faff 100%);
+      }
+      .results-instruction-single {
+        margin: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 10px 12px;
+        text-align: center;
+        font-weight: 600;
+        color: #183a63;
+        border: 1px solid #c4d3e3;
+        border-radius: 8px;
+        background: linear-gradient(135deg, #edf3fb 0%, #f7faff 100%);
+        margin-bottom: 12px;
+      }
+      @media (max-width: 991.98px) {
+        .results-grid-four {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+      @media (max-width: 575.98px) {
+        .results-labeled-row {
+          grid-template-columns: 1fr;
+          row-gap: 6px;
+        }
+        .results-grid-four {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+        .results-grid-three {
+          grid-template-columns: 1fr;
+        }
+      }
+      p a,
+      figcaption a {
+        color: #0b5fa5;
+      }
+      p a:hover,
+      figcaption a:hover {
+        color: #084d86;
+      }
+      .author-link {
+        color: #0b5fa5;
+        text-decoration: none;
+      }
+      .author-link:hover {
+        color: #084d86;
+        text-decoration: underline;
+      }
+      .research-image {
+        transition: transform 0.28s cubic-bezier(0.2, 0.7, 0.2, 1),
+          box-shadow 0.28s ease, border-color 0.28s ease, filter 0.28s ease;
+      }
+      .research-image:hover {
+        transform: translateY(-3px) scale(1.01);
+        border-color: rgba(0, 119, 182, 0.45);
+        box-shadow: 0 14px 30px rgba(24, 58, 99, 0.14),
+          0 0 0 1px rgba(0, 150, 199, 0.18);
+        filter: saturate(1.02) contrast(1.01);
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .research-image {
+          transition: none;
+        }
+        .research-image:hover {
+          transform: none;
+        }
+      }
+    </style>
+
+  </head>
+
+  <body
+    style="
+      padding: 5%;
+      padding-top: min(15px, 5%);
+      padding-bottom: min(5px, 5%);
+      width: 100%;
+    "
+  >
+    <div
+      class="container-lg text-center"
+      style="max-width: 1500px; margin: auto"
+      id="main"
+    >
+      <header role="banner">
+        <div class="row">
+          <h1 class="col-md-8 offset-md-2 text-center">
+            <a style="font-size: 25px">
+              <b>
+                <span style="color: #023e8a">Act</span><span style="color: #0077b6">ion</span>
+                <span style="color: #0096c7">Ima</span><span style="color: #00b4d8">ges:</span>
+                End-to-End Policy Learning via Multiview Video Generation
+              </b>
+            </a>
+          </h1>
+        </div>
+        <div class="row text-center">
+          <div class="container-fluid text-center px-0">
+            <ul
+              class="list-inline d-flex flex-wrap justify-content-center gap-0 mb-0"
+              style="max-width: 800px; margin: auto"
+            >
+              <li class="list-inline-item">
+                <span style="font-size: 15px"
+                  ><a href="https://haoyuzhen.com" target="_blank" rel="noopener noreferrer" class="author-link"
+                    >Haoyu Zhen</a
+                  ><sup>1*</sup></span
+                >
+              </li>
+              <li class="list-inline-item">
+                <span style="font-size: 15px"
+                  ><a href="https://zixiangao.github.io/" target="_blank" rel="noopener noreferrer" class="author-link"
+                    >Zixian Gao</a
+                  ><sup>1*</sup></span
+                >
+              </li>
+              <li class="list-inline-item">
+                <span style="font-size: 15px"
+                  ><a href="https://qiaosun22.github.io/" target="_blank" rel="noopener noreferrer" class="author-link"
+                    >Qiao Sun</a
+                  ><sup>1</sup></span
+                >
+              </li>
+              <li class="list-inline-item">
+                <span style="font-size: 15px"
+                  ><a href="https://ermu2001.github.io/me.io/" target="_blank" rel="noopener noreferrer" class="author-link"
+                    >Yilin Zhao</a
+                  ><sup>2</sup></span
+                >
+              </li>
+              <li class="list-inline-item">
+                <span style="font-size: 15px"
+                  ><a href="https://yyuncong.github.io/" target="_blank" rel="noopener noreferrer" class="author-link"
+                    >Yuncong Yang</a
+                  ><sup>1</sup></span
+                >
+              </li>
+              <li class="w-100"></li>
+              <li class="list-inline-item">
+                <span style="font-size: 15px"
+                  ><a href="https://yilundu.github.io/" target="_blank" rel="noopener noreferrer" class="author-link"
+                    >Yilun Du</a
+                  ><sup>3</sup></span
+                >
+              </li>
+              <li class="list-inline-item">
+                <span style="font-size: 15px"
+                  ><a href="https://psguo.github.io/" target="_blank" rel="noopener noreferrer" class="author-link"
+                    >Pengsheng Guo</a
+                  ><sup>4</sup></span
+                >
+              </li>
+              <li class="list-inline-item">
+                <span style="font-size: 15px"
+                  ><a href="https://zswang666.github.io/" target="_blank" rel="noopener noreferrer" class="author-link"
+                    >Tsun-Hsuan Wang</a
+                  ><sup>4</sup></span
+                >
+              </li>
+              <li class="list-inline-item">
+                <span style="font-size: 15px"
+                  ><a href="https://ylqiao.net/" target="_blank" rel="noopener noreferrer" class="author-link"
+                    >Yi-Ling Qiao</a
+                  ><sup>4</sup></span
+                >
+              </li>
+              <li class="list-inline-item">
+                <span style="font-size: 15px"
+                  ><a href="https://people.csail.mit.edu/ganchuang/" target="_blank" rel="noopener noreferrer" class="author-link"
+                    >Chuang Gan</a
+                  ><sup>1</sup></span
+                >
+              </li>
+            </ul>
+          </div>
+          <div
+            class="col-md-12 text-center"
+            style="font-size: 15px; margin-top: 5px"
+          >
+            <span><sup>1</sup>UMass Amherst</span>
+            <span class="mx-2"><sup>2</sup>NVIDIA</span>
+            <span class="mx-2"><sup>3</sup>Harvard University</span>
+            <span class="mx-2"><sup>4</sup>Genesis AI</span>
+          </div>
+          <div
+            class="col-md-12 text-center"
+            style="font-size: 13px; margin-top: 4px; color: #63778e"
+          >
+            <span><sup>*</sup>Equal contribution</span>
+          </div>
+        </div>
+        <br />
+        <div class="row text-center">
+          <div class="d-flex justify-content-center flex-wrap gap-5">
+            <div class="text-center">
+              <a
+                href="https://arxiv.org/abs/2604.06168"
+                class="external-link is-normal"
+                aria-label="Paper"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <img src="img/arxiv.png" alt="Paper" height="30" width="30" />
+              </a>
+              <div
+                class="normal"
+                style="
+                  display: flex;
+                  justify-content: center;
+                  align-items: center;
+                  width: 80px;
+                "
+              >
+                <b>Paper</b>
+              </div>
+            </div>
+            <div class="text-center">
+              <a
+                href="https://arxiv.org/pdf/2604.06168"
+                class="external-link is-normal"
+                aria-label="PDF"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <img src="img/blog.png" alt="PDF" height="30" width="30" />
+              </a>
+              <div
+                class="normal"
+                style="
+                  display: flex;
+                  justify-content: center;
+                  align-items: center;
+                  width: 80px;
+                "
+              >
+                <b>PDF</b>
+              </div>
+            </div>
+            <div class="text-center">
+              <a
+                href="https://github.com/UMass-Embodied-AGI/ActionImages"
+                class="external-link is-normal"
+                aria-label="Code"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <img src="img/github.png" alt="Code" height="30" width="30" />
+              </a>
+              <div
+                class="normal"
+                style="
+                  display: flex;
+                  justify-content: center;
+                  align-items: center;
+                  width: 80px;
+                "
+              >
+                <b>Code</b>
+              </div>
+            </div>
+            <div class="text-center">
+              <a href="#" class="external-link is-normal" aria-label="Demo">
+                <img src="img/demo.png" alt="Demo" height="30" width="30" />
+              </a>
+              <div
+                class="normal"
+                style="
+                  display: flex;
+                  justify-content: center;
+                  align-items: center;
+                  width: 80px;
+                "
+              >
+                <b>Demo</b>
+              </div>
+            </div>
+            <div class="text-center">
+              <a href="#" class="external-link is-normal" aria-label="Models">
+                <img src="img/huggingface.png" alt="Models" height="30" width="30" />
+              </a>
+              <div
+                class="normal"
+                style="
+                  display: flex;
+                  justify-content: center;
+                  align-items: center;
+                  width: 80px;
+                "
+              >
+                <b>Models</b>
+              </div>
+            </div>
+          </div>
+        </div>
+        <br /><br />
+      </header>
+
+      <main role="main">
+        <div
+          id="toc-sidebar"
+          class="toc-block"
+          style="
+            position: fixed;
+            left: 10px;
+            top: 20%;
+            transform: translateY(-50%);
+            z-index: 1000;
+            background: rgba(248, 251, 255, 0.96);
+            padding: 15px;
+          "
+        >
+          <h5 style="margin-bottom: 10px; color: #183a63">Sections</h5>
+          <ul
+            id="toc-list"
+            style="list-style: none; padding: 0; margin: 0; text-align: left"
+          ></ul>
+        </div>
+
+        <div
+          class="modal fade"
+          id="imageModal"
+          tabindex="-1"
+          aria-hidden="true"
+        >
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+              <div class="modal-body text-center">
+                <img id="modalImage" class="img-fluid" alt="" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-8 offset-md-2">
+            <p class="text-justify" style="text-align: left">
+              <strong>TL;DR.</strong> We propose
+              <em>Action Images</em>, a pixel-grounded multiview action
+              representation that turns 7-DoF robot control into
+              action videos, enabling zero-shot control and
+              unified video-action generation with a single video backbone.
+            </p>
+            <img
+              src="assets/teaser.png"
+              alt="Action Images teaser"
+              class="img-fluid d-block mx-auto my-3 research-image"
+            />
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-8 offset-md-2">
+            <h2 id="results" style="text-align: left">Zero-shot Results</h2>
+            <p class="text-justify mt-3" style="text-align: left">
+              Our video backbone can generate high-quality results across diverse environments and viewpoints.
+            </p>
+            <p class="results-instruction-single">
+              Instruction: Place the black cup in the paper box (Unseen environment, unseen embodiment)
+            </p>
+            <div class="results-labeled-row">
+              <p class="results-row-label">View1</p>
+              <div class="results-grid results-grid-four">
+                <div class="results-item">
+                <img
+                  src="assets/results/black_cup_box/left.jpg"
+                  alt="View1 image"
+                  class="w-100 h-100"
+                  style="object-fit: cover; border-radius: 8px; border: 1px solid #c4d3e3"
+                />
+                </div>
+                <div class="results-item">
+                <video
+                  src="assets/results/black_cup_box/view1.mp4"
+                  class="w-100 h-100"
+                  style="object-fit: cover; border-radius: 8px; border: 1px solid #c4d3e3"
+                  autoplay
+                  muted
+                  loop
+                  playsinline
+                >
+                  Your browser does not support the video tag.
+                </video>
+                </div>
+                <div class="results-item">
+                <video
+                  src="assets/results/black_cup_box/view1_comb.mp4"
+                  class="w-100 h-100"
+                  style="object-fit: cover; border-radius: 8px; border: 1px solid #c4d3e3"
+                  autoplay
+                  muted
+                  loop
+                  playsinline
+                >
+                  Your browser does not support the video tag.
+                </video>
+                </div>
+                <div class="results-item">
+                <video
+                  src="assets/results/black_cup_box/view1_action.mp4"
+                  class="w-100 h-100"
+                  style="object-fit: cover; border-radius: 8px; border: 1px solid #c4d3e3"
+                  autoplay
+                  muted
+                  loop
+                  playsinline
+                >
+                  Your browser does not support the video tag.
+                </video>
+                </div>
+              </div>
+            </div>
+            <div class="results-labeled-row">
+              <p class="results-row-label">View 2</p>
+              <div class="results-grid results-grid-four">
+                <div class="results-item">
+                <img
+                  src="assets/results/black_cup_box/right.jpg"
+                  alt="View2 image"
+                  class="w-100 h-100"
+                  style="object-fit: cover; border-radius: 8px; border: 1px solid #c4d3e3"
+                />
+                </div>
+                <div class="results-item">
+                <video
+                  src="assets/results/black_cup_box/view2.mp4"
+                  class="w-100 h-100"
+                  style="object-fit: cover; border-radius: 8px; border: 1px solid #c4d3e3"
+                  autoplay
+                  muted
+                  loop
+                  playsinline
+                >
+                  Your browser does not support the video tag.
+                </video>
+                </div>
+                <div class="results-item">
+                <video
+                  src="assets/results/black_cup_box/view2_comb.mp4"
+                  class="w-100 h-100"
+                  style="object-fit: cover; border-radius: 8px; border: 1px solid #c4d3e3"
+                  autoplay
+                  muted
+                  loop
+                  playsinline
+                >
+                  Your browser does not support the video tag.
+                </video>
+                </div>
+                <div class="results-item">
+                <video
+                  src="assets/results/black_cup_box/view2_action.mp4"
+                  class="w-100 h-100"
+                  style="object-fit: cover; border-radius: 8px; border: 1px solid #c4d3e3"
+                  autoplay
+                  muted
+                  loop
+                  playsinline
+                >
+                  Your browser does not support the video tag.
+                </video>
+                </div>
+              </div>
+            </div>
+            <div class="results-grid results-grid-three">
+              <div class="results-item">
+                <video
+                  src="assets/results/black_cup_box/traj.mp4"
+                  class="w-100 h-100"
+                  style="object-fit: cover; border-radius: 8px; border: 1px solid #c4d3e3"
+                  autoplay
+                  muted
+                  loop
+                  playsinline
+                >
+                  Your browser does not support the video tag.
+                </video>
+              </div>
+              <div class="results-item interactive-3d-card">
+                <model-viewer
+                  id="interactive-3d-viewer"
+                  src="assets/results/black_cup_box/scene.glb"
+                  alt="3D interactive scene"
+                  camera-controls
+                  orientation="0deg -10deg 0deg"
+                  scale="2.5 2.5 2.5"
+                  camera-orbit="0deg 80deg 30%"
+                  min-camera-orbit="auto auto 15%"
+                  max-camera-orbit="auto auto 150%"
+                  touch-action="pan-y"
+                  exposure="1"
+                  environment-image="neutral"
+                ></model-viewer>
+                <p id="interactive-3d-status" class="interactive-3d-status">
+                  Loading 3D scene...
+                </p>
+              </div>
+              <div class="results-item">
+                <video
+                  src="assets/results/black_cup_box/exec.mp4"
+                  class="w-100 h-100"
+                  style="object-fit: cover; border-radius: 8px; border: 1px solid #c4d3e3"
+                  autoplay
+                  muted
+                  loop
+                  playsinline
+                >
+                  Your browser does not support the video tag.
+                </video>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <br />
+        <div class="row">
+          <div class="col-md-8 offset-md-2">
+            <h2 id="abstract" style="text-align: left">Abstract</h2>
+            <p class="text-justify" style="text-align: left">
+              World action models (WAMs) have emerged as a promising direction
+              for robot policy learning, as they can leverage powerful video
+              backbones to model the future states. However, existing
+              approaches often rely on separate action modules, or use action
+              representations that are not pixel-grounded, making it difficult
+              to fully exploit the pretrained knowledge of video models and
+              limiting transfer across viewpoints and environments. In this
+              work, we present <em>Action Images</em>, a unified world action
+              model that formulates policy learning as multiview video
+              generation. Instead of encoding control as low-dimensional
+              tokens, we translate 7-DoF robot actions into interpretable
+              action images: multi-view action videos that are grounded in 2D
+              pixels and explicitly track robot-arm motion. This pixel-grounded
+              action representation allows the video backbone itself to act as
+              a zero-shot policy, without a separate policy head or action
+              module. Beyond control, the same unified model supports
+              video-action joint generation, action-conditioned video
+              generation, and action labeling under a shared representation. On
+              RLBench and real-world evaluations, our model achieves the
+              strongest zero-shot success rates and improves video-action joint
+              generation quality over prior video-space world models,
+              suggesting that interpretable action images are a promising route
+              to policy learning.
+            </p>
+          </div>
+        </div>
+        <br />
+        <div class="row">
+          <div class="col-md-8 offset-md-2">
+            <h2 id="method" style="text-align: left">Method</h2>
+            <p class="text-justify" style="text-align: left">
+              Our method builds a single video-space interface for observations
+              and control. We rasterize each 7-DoF command into multi-view
+              Gaussian action images aligned with RGB, decode predicted heatmaps
+              back to continuous actions with a lightweight multi-view
+              procedure, and fine-tune a pretrained video generator so masked
+              latent training covers joint generation, action-conditioned video,
+              video-to-action labeling, and video-only rollouts—yielding one
+              model that both imagines the world and acts in it.
+            </p>
+            <figure class="my-4">
+              <img
+                src="assets/actionimages.png"
+                alt="Action as image"
+                class="img-fluid d-block mx-auto my-3 research-image"
+                style="max-width: 60%"
+              />
+              <figcaption class="mt-3 text-justify" style="text-align: left">
+                <strong>Action as image.</strong> We convert each 7-DoF robot
+                action into three semantic 3D points (position, normal, and up),
+                project them into image space, and render them as RGB Gaussian
+                heatmaps. The blue channel further encodes gripper openness in
+                the low-response background, producing a pixel-grounded action
+                representation.
+              </figcaption>
+            </figure>
+            <br />
+            <figure class="my-4">
+              <div id="training-media-container"></div>
+              <figcaption class="mt-3 text-justify" style="text-align: left">
+                <strong>Unified world-action model training.</strong> Multi-view
+                video and action latents are packed with text and camera
+                conditions, and trained under diverse mask strategies.
+              </figcaption>
+            </figure>
+          </div>
+        </div>
+        <br /><br /><br />
+
+        <div class="col-md-8 offset-md-2 text-start">
+          <h3 style="text-align: center">BibTeX</h3>
+          <textarea id="bibtex" class="form-control" readonly>
+@article{zhen2026actionimages,
+  title={Action Images: End-to-End Policy Learning via Multiview Video Generation},
+  author={Haoyu Zhen and Zixian Gao and Qiao Sun and Yilin Zhao and Yuncong Yang and Yilun Du and Pengsheng Guo and Tsun-Hsuan Wang and Yi-Ling Qiao and Chuang Gan},
+  year={2026},
+  eprint={2604.06168},
+  archivePrefix={arXiv},
+  primaryClass={cs.CV},
+  url={https://arxiv.org/abs/2604.06168},
+}
+          </textarea>
+        </div>
+        <br /><br />
+        <div class="row">
+          <div class="col-md-8 offset-md-2">
+            <h3 style="text-align: center">Our previous work</h3>
+            <div class="row g-4 justify-content-center mt-2">
+              <div class="col-md-6 previous-work-card">
+                <a
+                  href="https://tesseractworld.github.io/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="text-decoration-none d-block"
+                  aria-label="TesserAct: Learning 4D Embodied World Models"
+                >
+                  <video
+                    class="previous-work-preview"
+                    src="https://tesseractworld.github.io/assets/teaser.mp4"
+                    autoplay
+                    muted
+                    loop
+                    playsinline
+                  ></video>
+                  <div class="mt-2">
+                    <div class="fw-semibold previous-work-title" style="color: #183a63">
+                      TesserAct
+                    </div>
+                    <div class="small" style="color: #63778e">
+                      Learning 4D Embodied World Models
+                    </div>
+                  </div>
+                </a>
+              </div>
+              <div class="col-md-6 previous-work-card">
+                <a
+                  href="https://umass-embodied-agi.github.io/MindJourney/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="text-decoration-none d-block"
+                  aria-label="MindJourney: Test-Time Scaling with World Models for Spatial Reasoning"
+                >
+                  <video
+                    class="previous-work-preview previous-work-preview--letterbox"
+                    src="https://umass-embodied-agi.github.io/MindJourney/static/videos/opening_video.mp4"
+                    autoplay
+                    muted
+                    loop
+                    playsinline
+                  ></video>
+                  <div class="mt-2">
+                    <div class="fw-semibold previous-work-title" style="color: #183a63">
+                      MindJourney
+                    </div>
+                    <div class="small" style="color: #63778e">
+                      Test-Time Scaling with World Models for Spatial Reasoning
+                    </div>
+                  </div>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+        <br /><br /><br /><br />
+      </main>
+      <footer>
+        <div class="row">
+          <div class="col-md-8 offset-md-2 text-start">
+            <p class="text-justify" style="text-align: right">
+              <i>
+                The website template was modified based on
+                <a href="https://stable-virtual-camera.github.io/"
+                  >Stable Virtual Camera</a
+                > and <a href="https://tesseractworld.github.io/">TesserAct</a>.
+              </i>
+            </p>
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const masonryContainers = document.querySelectorAll(".masonry-container");
+        masonryContainers.forEach((masonryContainer) => {
+          const masonry = new Masonry(masonryContainer, {
+            itemSelector: ".masonry-item",
+            columnWidth: ".masonry-sizer",
+            percentPosition: true,
+          });
+          setTimeout(function () {
+            masonry.layout();
+          }, 100);
+        });
+
+        const viewer = document.getElementById("interactive-3d-viewer");
+        const status = document.getElementById("interactive-3d-status");
+        const trainingMediaContainer = document.getElementById(
+          "training-media-container",
+        );
+        if (trainingMediaContainer) {
+          const isMobileDevice =
+            /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent) ||
+            window.matchMedia("(max-width: 767.98px)").matches;
+          if (isMobileDevice) {
+            const img = document.createElement("img");
+            img.src = "assets/training.png";
+            img.alt = "Unified world-action model training";
+            img.className = "img-fluid d-block mx-auto my-3 research-image";
+            img.style.maxWidth = "90%";
+            img.style.borderRadius = "8px";
+            img.style.border = "1px solid #c4d3e3";
+            trainingMediaContainer.appendChild(img);
+          } else {
+            const video = document.createElement("video");
+            video.src = "assets/training.mp4";
+            video.className =
+              "img-fluid d-block mx-auto my-3 research-image training-video";
+            video.style.maxWidth = "90%";
+            video.style.borderRadius = "8px";
+            video.style.border = "1px solid #c4d3e3";
+            video.autoplay = true;
+            video.muted = true;
+            video.loop = true;
+            trainingMediaContainer.appendChild(video);
+          }
+        }
+        if (viewer && status) {
+          const hideStatus = function () {
+            status.classList.add("hidden");
+          };
+          viewer.addEventListener("load", hideStatus);
+          viewer.addEventListener("model-visibility", hideStatus);
+          viewer.addEventListener("error", function () {
+            status.classList.remove("hidden");
+            status.textContent =
+              "Failed to load 3D scene.";
+          });
+        }
+      });
+    </script>
+  </body>
+</html>
